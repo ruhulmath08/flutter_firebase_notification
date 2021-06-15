@@ -20,19 +20,39 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      body: Center(
-        child: ElevatedButton(
-          onPressed: () {
-            notify();
-            AwesomeNotifications().actionStream.listen((receivedNotifications) {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => DetailsPage(title: 'Details Page'),
+      body: Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    notify();
+                    AwesomeNotifications().actionStream.listen((receivedNotifications) {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => DetailsPage(title: 'Details Page'),
+                        ),
+                      );
+                    });
+                  },
+                  icon: Icon(Icons.circle_notifications),
+                  label: Text('Local Notification'),
                 ),
-              );
-            });
-          },
-          child: Icon(Icons.circle_notifications),
+              ),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: () {},
+                  icon: Icon(Icons.notifications_active),
+                  label: Text('Firebase Notification'),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
