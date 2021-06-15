@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "735652583962",
+    "project_id": "flutterfirebasenotificat-5f113",
+    "storage_bucket": "flutterfirebasenotificat-5f113.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:735652583962:android:e8bbb400a58defe0e78fa3",
+        "android_client_info": {
+          "package_name": "com.example.flutter_firebase_notification"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "735652583962-ipad1ssunvgmh1tbsb644uriq6lq3fa9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB39vF06aDog0oaKhsbuTxbp00iKSjZuXY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "735652583962-ipad1ssunvgmh1tbsb644uriq6lq3fa9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
