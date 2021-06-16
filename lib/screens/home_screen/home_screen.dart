@@ -1,6 +1,8 @@
 import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_firebase_notification/screens/details_screen/details_screen.dart';
+import 'package:flutter_firebase_notification/model/notification_model.dart';
+import 'package:flutter_firebase_notification/screens/notification_details_screen/notification_details_screen.dart';
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key? key, required this.title}) : super(key: key);
@@ -12,13 +14,82 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  late FirebaseMessaging messaging;
+  List<NotificationModel> notifications = [];
+
+  @override
+  void initState() {
+    super.initState();
+    messaging = FirebaseMessaging.instance;
+    messaging.subscribeToTopic('global');
+    messaging.getToken().then((value) => print('Token: $value'));
+
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      NotificationModel notificationModel = NotificationModel('', '');
+      notificationModel.title = message.notification!.title.toString();
+      notificationModel.body = message.notification!.body.toString();
+      setState(() {
+        notifications.add(notificationModel);
+      });
+    });
+
+    FirebaseMessaging.onMessageOpenedApp.listen((message) {
+      notify(message);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    //
-
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
+        actions: [
+          InkWell(
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => NotificationDetailsPage(
+                    title: 'Notifications',
+                    notifications: notifications,
+                  ),
+                ),
+              );
+            },
+            child: Stack(
+              children: [
+                IconButton(
+                  onPressed: () {},
+                  icon: Icon(Icons.notifications),
+                ),
+                notifications.length != 0
+                    ? Positioned(
+                        right: 10,
+                        top: 7,
+                        child: Container(
+                          padding: EdgeInsets.all(3),
+                          decoration: new BoxDecoration(
+                            color: Colors.red,
+                            borderRadius: BorderRadius.circular(50),
+                          ),
+                          constraints: BoxConstraints(
+                            minWidth: 20,
+                            minHeight: 20,
+                          ),
+                          child: Text(
+                            notifications.length.toString(),
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      )
+                    : Container(),
+              ],
+            ),
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(10.0),
@@ -30,25 +101,12 @@ class _MyHomePageState extends State<MyHomePage> {
                 width: double.infinity,
                 child: ElevatedButton.icon(
                   onPressed: () {
-                    notify();
-                    AwesomeNotifications().actionStream.listen((receivedNotifications) {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => DetailsPage(title: 'Details Page'),
-                        ),
-                      );
+                    setState(() {
+                      notifications.length = 0;
                     });
                   },
                   icon: Icon(Icons.circle_notifications),
-                  label: Text('Local Notification'),
-                ),
-              ),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton.icon(
-                  onPressed: () {},
-                  icon: Icon(Icons.notifications_active),
-                  label: Text('Firebase Notification'),
+                  label: Text('Clear Notification'),
                 ),
               ),
             ],
@@ -59,21 +117,15 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-void notify() async {
-  String timezone = await AwesomeNotifications().getLocalTimeZoneIdentifier();
+void notify(RemoteMessage message) async {
   await AwesomeNotifications().createNotification(
     content: NotificationContent(
       id: 1,
       channelKey: 'key1',
-      title: 'This is notification title',
-      body: 'This is notification body. Details about notification',
+      title: message.notification!.title,
+      body: message.notification!.body,
       bigPicture: 'https://i.morioh.com/2019/11/17/3936d3badf8c.jpg',
       notificationLayout: NotificationLayout.BigPicture,
-    ),
-    schedule: NotificationInterval(
-      interval: 5,
-      timeZone: timezone,
-      repeats: false,
     ),
   );
 }

@@ -7,9 +7,9 @@ import 'package:flutter_firebase_notification/screens/home_screen/home_screen.da
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); //help to initialize the external library
   await Firebase.initializeApp();
-  FirebaseMessaging.onMessage.listen(_firebasePushHandler);
-  FirebaseMessaging.onMessageOpenedApp.listen(_firebasePushHandler);
+  FirebaseMessaging.onBackgroundMessage(_messageHandler);
 
+  //local notification
   AwesomeNotifications().initialize(
     null,
     [
@@ -42,7 +42,6 @@ class MyApp extends StatelessWidget {
   }
 }
 
-Future<void> _firebasePushHandler(RemoteMessage message) async {
-  print('Message from push notification is: ${message.data}');
-  AwesomeNotifications().createNotificationFromJsonData(message.data);
+Future<void> _messageHandler(RemoteMessage message) async {
+  print('background message ${message.notification!.body}');
 }
